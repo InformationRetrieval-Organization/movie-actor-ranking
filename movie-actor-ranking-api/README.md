@@ -2,35 +2,36 @@
 
 ## requirements
 
-* Python >=3.7
+* Python >=3.12
+* [uv](https://docs.astral.sh/uv/) - Fast Python package installer
 * Visual Studio Code
 
 ## Python
 
-### unix/mac
+### Install uv (if not already installed)
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-pip install --upgrade pip
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-### windows
+### Install dependencies
 ```bash
-python -m venv .venv
-.\.venv\Scripts\activate
-pip install -r requirements.txt
-pip install --upgrade pip
+uv sync
 ```
 
-## environment variables
+## Environment variables
 * copy and rename the `.env.sample` file to `.env`
 
-## database 
+## Database 
 ```bash
 docker compose -f docker.compose.yml up -d
-prisma db push
+uv run python -m prisma db push
+uv run python -m prisma generate
 sh scripts/import_data.sh
+```
+
+### Run application
+```bash
+uv run gunicorn main:app -c gunicorn.conf.py
 ```
 
 ### optional: pgadmin
