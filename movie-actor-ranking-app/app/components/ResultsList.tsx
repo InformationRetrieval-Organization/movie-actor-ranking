@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardHeader, CardBody, Link, Pagination, Image } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Link, Pagination, Image } from "@heroui/react";
 
 // Utility function to format the IMDb ID
 const formatImdbId = (imdbId: number): string => {

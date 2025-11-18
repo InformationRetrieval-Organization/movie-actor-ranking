@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Button, Divider, Input } from "@nextui-org/react";
+import { Button, Divider, Input } from "@heroui/react";
 import { SearchIcon } from "../../components/icons";
 import ResultsList from "./ResultsList";
 import { getActors } from '../api/movieActorRanking';

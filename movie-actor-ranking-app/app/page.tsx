@@ -1,5 +1,5 @@
 "use client";
-import { Tabs, Tab } from "@nextui-org/react";
+import { Tabs, Tab } from "@heroui/react";
 import SearchComponent from "./components/SearchComponent";
 
 
