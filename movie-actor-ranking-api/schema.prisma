@@ -1,12 +1,12 @@
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = "5"
+  interface            = "asyncio"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider             = "prisma-client-py"
-  interface            = "asyncio"
-  recursive_type_depth = 5
 }
 
 model Movie {
@@ -19,42 +19,42 @@ model Movie {
 }
 
 model Actor {
-  id          Int     @id @default(autoincrement())
-  imdbId      Int?    @unique
+  id          Int               @id @default(autoincrement())
+  imdbId      Int?              @unique
   name        String
   headshotUrl String?
-  roles       Role[]
   classifiers ActorClassifier[]
+  roles       Role[]
 }
 
 model Role {
   id      Int      @id @default(autoincrement())
   name    String
-  movie   Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   movieId Int
-  actor   Actor    @relation(fields: [actorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   actorId Int
+  actor   Actor    @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  movie   Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
   scripts Script[]
 }
 
 model Script {
-  id       Int     @id @default(autoincrement())
-  dialogue String
-  processedDialogue String? 
-  movie    Movie   @relation(fields: [movieId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  movieId  Int
-  role     Role    @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  roleId   Int
+  id                Int     @id @default(autoincrement())
+  dialogue          String
+  processedDialogue String?
+  movieId           Int
+  roleId            Int
+  movie             Movie   @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  role              Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
 }
 
 model ActorClassifier {
-  id      Int    @id @default(autoincrement())
-  actor   Actor  @relation(fields: [actorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  actorId Int
-  loveScore   Float?
-  joyScore    Float?
-  angerScore  Float?
-  sadnessScore Float?
+  id            Int    @id @default(autoincrement())
+  actorId       Int
+  loveScore     Float?
+  joyScore      Float?
+  angerScore    Float?
+  sadnessScore  Float?
   surpriseScore Float?
-  fearScore Float?
+  fearScore     Float?
+  actor         Actor  @relation(fields: [actorId], references: [id], onDelete: Cascade)
 }
