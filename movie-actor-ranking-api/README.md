@@ -23,7 +23,7 @@ uv sync
 
 ## Database 
 ```bash
-docker compose -f docker.compose.yml up -d
+docker compose -f compose.yml up -d
 uv run python -m prisma db push
 uv run python -m prisma generate
 sh scripts/import_data.sh
