@@ -155,7 +155,7 @@ def preprocess_script(
     """
     # Remove special characters and convert to lowercase
     content = script.dialogue.lower()
-    content = re.sub("[–!\"#$%&'()*+,-./:;<=‘>—?@[\]^_`�{|}~\n’“”]", "", content)
+    content = re.sub(r"[-!\"#$%&'()*+,-./:;<='>—?@\[\]^_`�{|}~\n'" "]", "", content)
 
     # Remove non-english words
     content = " ".join(
