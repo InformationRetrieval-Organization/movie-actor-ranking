@@ -1,5 +1,10 @@
 FROM python:3.12-slim
 
+# Install system dependencies required for Prisma/Node.js
+RUN apt-get update && apt-get install -y \
+    libatomic1 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install uv
 COPY --from=ghcr.io/astral-sh/uv:0.9.10 /uv /uvx /bin/
 
