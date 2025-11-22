@@ -1,5 +1,6 @@
 .git*
 **/*.pyc
+**/__pycache__
 .vscode/
 .venv/
 data/
@@ -7,6 +8,9 @@ scripts/
 Dockerfile
 .dockerignore
 README.md
+compose.yml
 docker.compose.yml
+.env
 .env.sample
+.env.production
 database_dump.sql
