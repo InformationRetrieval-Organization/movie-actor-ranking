@@ -13,7 +13,7 @@ WORKSPACE=$(pwd)
 INPUT_FILE=$WORKSPACE/$INPUT_FILE
 
 # reset the database tables
-#python3 src/db/reset_database.py
+uv run python src/db/helpers/reset_database.py
 
 # Import the dump file into the PostgreSQL database
 docker exec -i $CONTAINER_NAME pg_restore -U $USERNAME -d $DATABASE_NAME -v < $INPUT_FILE
