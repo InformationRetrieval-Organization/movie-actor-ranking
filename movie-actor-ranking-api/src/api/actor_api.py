@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter
 from typing import List
 from db.models import Actor
@@ -9,6 +10,7 @@ from information_retrieval.classified_vector_space_model import (
 )
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.get(
@@ -23,12 +25,12 @@ async def search_classifier_actor(q: str) -> List[Actor]:
     Example usage: http://127.0.0.1:8000/search/classifier/actor?q=handsome%20man
     """
     query = q
-    print(f"Query: {query}")
+    logger.info("Classifier search query: %s", query)
 
     # search classified vector space model
     actors = await search_classified_vector_space_model(query)
 
-    print(f"returning {len(actors)} actors")
+    logger.info("Classifier search returning %s actors", len(actors))
 
     return actors
 
@@ -45,11 +47,11 @@ async def search_token_actor(q: str) -> List[Actor]:
     Example usage: http://127.0.0.1:8000/search/token/actor?q=handsome%20man
     """
     query = q
-    print(f"Query: {query}")
+    logger.info("Token search query: %s", query)
 
     # search matching actors with vector space model
     actors = await search_token_vector_space_model(query)
 
-    print(f"returning {len(actors)} actors")
+    logger.info("Token search returning %s actors", len(actors))
 
     return actors

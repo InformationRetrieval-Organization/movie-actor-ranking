@@ -1,4 +1,5 @@
 from imdb import IMDb
+import logging
 import os
 import sys
 import pandas as pd
@@ -7,6 +8,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from config import RAW_IMSDB_MOV_FILE_PATH, PRO_IMDB_MOV_ROL_FILE_PATH
+
+logger = logging.getLogger(__name__)
 
 
 def fetch_movie_data(movie_name: str, imdb: IMDb):
@@ -28,8 +31,10 @@ def fetch_movie_data(movie_name: str, imdb: IMDb):
 
             for character in characters:
                 if "name" not in character:
-                    print(
-                        f"Warning: Actor '{person['name']}' without a role in movie '{movie['title']}'"
+                    logger.warning(
+                        "Actor '%s' without a role in movie '%s'",
+                        person["name"],
+                        movie["title"],
                     )
                     continue
 
@@ -80,7 +85,7 @@ def get_imdb_data(input_file_path: str, output_file_path: str):
                 characters_data.extend(result)
             except Exception as exc:
                 movie_name = futures[future]
-                print(f"Error processing {movie_name}: {exc}")
+                logger.exception("Error processing %s", movie_name)
 
     characters_df = pd.DataFrame(characters_data)
     characters_df.to_csv(
@@ -105,7 +110,7 @@ def get_imdb_data(input_file_path: str, output_file_path: str):
                 actor_headshots[actor_id] = headshot
             except Exception as exc:
                 actor_id = futures[future]
-                print(f"Error processing {actor_id}: {exc}")
+                logger.exception("Error processing %s", actor_id)
 
     characters_df["imdb_actor_headshot_url"] = characters_df["imdb_actor_id"].map(
         actor_headshots
@@ -114,4 +119,5 @@ def get_imdb_data(input_file_path: str, output_file_path: str):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     get_imdb_data(RAW_IMSDB_MOV_FILE_PATH, PRO_IMDB_MOV_ROL_FILE_PATH)

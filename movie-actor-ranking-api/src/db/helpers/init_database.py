@@ -1,4 +1,5 @@
 import pandas as pd
+import logging
 import os
 import sys
 import asyncio
@@ -17,6 +18,8 @@ from config import (
     PRO_IMDB_MOV_ROL_FILE_PATH,
     PRO_IMDB_IMSDB_MOV_SCR_FILE_PATH,
 )
+
+logger = logging.getLogger(__name__)
 
 
 async def init_database():
@@ -52,7 +55,7 @@ async def insert_actors():
 
     res = await create_many_actors(actors)
 
-    print(f"Inserted {res} actors")
+    logger.info("Inserted %s actors", res)
 
 
 async def insert_movies():
@@ -76,7 +79,7 @@ async def insert_movies():
 
     res = await create_many_movies(movies)
 
-    print(f"Inserted {res} movies")
+    logger.info("Inserted %s movies", res)
 
 
 async def insert_roles():
@@ -117,7 +120,7 @@ async def insert_roles():
     # columns to fill: name, movieId, actorId
     res = await create_many_roles(roles)
 
-    print(f"Inserted {res} roles")
+    logger.info("Inserted %s roles", res)
 
 
 async def insert_scripts():
@@ -155,8 +158,9 @@ async def insert_scripts():
     # columns to fill: dialogue, movieId, roleId
     res = await create_many_scripts(scripts)
 
-    print(f"Inserted {res} scripts")
+    logger.info("Inserted %s scripts", res)
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     asyncio.run(init_database())

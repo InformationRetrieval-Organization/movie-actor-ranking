@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+import logging
 from fastapi import FastAPI
 from api.actor_api import router as actor_router
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,12 +21,15 @@ from utils.classification import load_classification_model
 from data_preprocessing.actor_classfication import classify_actors
 from db.session import init_db_schema
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 limiter = Limiter(key_func=get_remote_address, default_limits=["30/minute"])
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("FastAPI app started.")
+    logger.info("FastAPI app started.")
 
     await init_db_schema()
 

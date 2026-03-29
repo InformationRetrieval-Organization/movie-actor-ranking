@@ -1,4 +1,5 @@
 from typing import Dict, List, Union
+import logging
 
 from sqlalchemy import text
 from sqlalchemy.orm import selectinload
@@ -6,6 +7,8 @@ from sqlmodel import select
 
 from db.models import Actor, Role
 from db.session import SessionLocal
+
+logger = logging.getLogger(__name__)
 
 
 async def get_all_actors() -> List[Actor]:
@@ -17,7 +20,7 @@ async def get_all_actors() -> List[Actor]:
             result = await session.exec(select(Actor))
             return result.all()
     except Exception as e:
-        print(f"An error occurred while fetching actors: {e}")
+        logger.exception("An error occurred while fetching actors")
         return []
 
 
@@ -32,7 +35,7 @@ async def create_many_actors(actors: List[Dict[str, Union[str, int, str]]]) -> i
             await session.commit()
             return len(actor_objects)
     except Exception as e:
-        print(f"An error occurred while creating the actors: {e}")
+        logger.exception("An error occurred while creating actors")
 
 
 async def create_one_actor(name: str, imdb_id: int, headshot_url: str) -> Actor:
@@ -47,7 +50,7 @@ async def create_one_actor(name: str, imdb_id: int, headshot_url: str) -> Actor:
             await session.refresh(actor)
             return actor
     except Exception as e:
-        print(f"An error occurred while creating the actor: {e}")
+        logger.exception("An error occurred while creating actor")
 
 
 async def get_actors_by_ids(ids: List[int]) -> List[Actor]:
@@ -69,7 +72,7 @@ async def get_actors_by_ids(ids: List[int]) -> List[Actor]:
             rank_map = {actor_id: idx for idx, actor_id in enumerate(ids)}
             return sorted(actors, key=lambda actor: rank_map.get(actor.id, len(ids)))
     except Exception as e:
-        print(f"An error occurred while fetching actors: {e}")
+        logger.exception("An error occurred while fetching actors by ids")
         return []
 
 
@@ -77,7 +80,7 @@ async def delete_all_actors() -> None:
     """
     Delete all actors from the database and reset the auto-increment counter
     """
-    print("Deleting all actors")
+    logger.info("Deleting all actors")
     try:
         async with SessionLocal() as session:
             await session.execute(
@@ -85,7 +88,7 @@ async def delete_all_actors() -> None:
             )
             await session.commit()
     except Exception as e:
-        print(f"An error occurred while deleting actors: {e}")
+        logger.exception("An error occurred while deleting actors")
 
 
 async def get_actors_by_name(name: str) -> List[Actor]:
@@ -98,7 +101,7 @@ async def get_actors_by_name(name: str) -> List[Actor]:
             result = await session.exec(stmt)
             return result.all()
     except Exception as e:
-        print(f"An error occurred while searching for the actor: {e}")
+        logger.exception("An error occurred while searching for actor")
         return []
 
 
@@ -117,7 +120,7 @@ async def get_actors_by_names(names: List[str]) -> List[Actor]:
 
             return actors
     except Exception as e:
-        print(f"An error occurred while searching for the actors: {e}")
+        logger.exception("An error occurred while searching for actors")
         return []
 
 
@@ -148,7 +151,7 @@ async def get_all_actors_dialogues() -> List[Actor]:
 
             return filtered_actors
     except Exception as e:
-        print(f"An error occurred while fetching actors: {e}")
+        logger.exception("An error occurred while fetching actors with dialogues")
         return []
 
 
@@ -182,7 +185,9 @@ async def get_all_actors_dialogues_processed() -> List[Actor]:
 
             return filtered_actors
     except Exception as e:
-        print(f"An error occurred while fetching actors: {e}")
+        logger.exception(
+            "An error occurred while fetching actors with processed dialogues"
+        )
         return []
 
 
@@ -200,5 +205,5 @@ async def get_actors_by_most_roles() -> List[Actor]:
 
             return actors_with_roles
     except Exception as e:
-        print(f"An error occurred while fetching actors: {e}")
+        logger.exception("An error occurred while fetching actors by role count")
         return []

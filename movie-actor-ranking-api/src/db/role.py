@@ -1,10 +1,13 @@
 from typing import Dict, List, Union
+import logging
 
 from sqlalchemy import text
 from sqlmodel import select
 
 from db.models import Role
 from db.session import SessionLocal
+
+logger = logging.getLogger(__name__)
 
 
 async def get_all_roles() -> List[Role]:
@@ -16,7 +19,7 @@ async def get_all_roles() -> List[Role]:
             result = await session.exec(select(Role))
             return result.all()
     except Exception as e:
-        print(f"An error occurred while fetching roles: {e}")
+        logger.exception("An error occurred while fetching roles")
         return []
 
 
@@ -31,7 +34,7 @@ async def create_many_roles(roles: List[Dict[str, Union[str, int]]]) -> int:
             await session.commit()
             return len(role_objects)
     except Exception as e:
-        print(f"An error occurred while creating the roles: {e}")
+        logger.exception("An error occurred while creating roles")
 
 
 async def create_one_role(name: str, movie_id: int, actor_id: int) -> Role:
@@ -46,14 +49,14 @@ async def create_one_role(name: str, movie_id: int, actor_id: int) -> Role:
             await session.refresh(role)
             return role
     except Exception as e:
-        print(f"An error occurred while creating the role: {e}")
+        logger.exception("An error occurred while creating role")
 
 
 async def delete_all_roles() -> None:
     """
     Delete all roles from the database and reset the auto-increment counter
     """
-    print("Deleting all roles")
+    logger.info("Deleting all roles")
     try:
         async with SessionLocal() as session:
             await session.execute(
@@ -61,7 +64,7 @@ async def delete_all_roles() -> None:
             )
             await session.commit()
     except Exception as e:
-        print(f"An error occurred while deleting roles: {e}")
+        logger.exception("An error occurred while deleting roles")
 
 
 async def search_role(title: str) -> List[Role]:
@@ -74,7 +77,7 @@ async def search_role(title: str) -> List[Role]:
             result = await session.exec(stmt)
             return result.all()
     except Exception as e:
-        print(f"An error occurred while searching for a role: {e}")
+        logger.exception("An error occurred while searching for role")
         return []
 
 
@@ -88,5 +91,5 @@ async def search_roles(titles: List[str]) -> Dict[str, int]:
             roles = (await session.exec(stmt)).all()
             return {role.name: role.id for role in roles}
     except Exception as e:
-        print(f"An error occurred while searching for roles: {e}")
+        logger.exception("An error occurred while searching for roles")
         return {}

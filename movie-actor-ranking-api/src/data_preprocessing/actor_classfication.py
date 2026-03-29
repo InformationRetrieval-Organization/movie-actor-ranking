@@ -1,4 +1,5 @@
 from typing import List, Dict, Union
+import logging
 from db.actor_classifier import create_many_actor_classifiers, get_all_actor_classifiers
 from db.actor import get_all_actors_dialogues
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -7,6 +8,8 @@ from utils.classification import get_classification
 import os
 import asyncio
 from db.models import Actor
+
+logger = logging.getLogger(__name__)
 
 
 def split_text_into_chunks(
@@ -97,14 +100,14 @@ async def classify_actors():
     """
     Classify all actors based on their dialogues and store the results in the database.
     """
-    print("Classifying actors...")
+    logger.info("Classifying actors...")
 
     # Get all actor dialogues from the database
     actor_dialogues = await get_all_actors_dialogues()
     actors_classified = await get_all_actor_classifiers()
 
     if len(actor_dialogues) == len(actors_classified):
-        print("All actors are already classified.")
+        logger.info("All actors are already classified.")
         return
 
     actors_classification = {}  # Dictionary to store the classification of each actor
@@ -172,4 +175,4 @@ async def classify_actors():
     # Bulk insert actor classifiers
     await create_many_actor_classifiers(actor_classifiers)
 
-    print("All actors classified successfully.")
+    logger.info("All actors classified successfully.")

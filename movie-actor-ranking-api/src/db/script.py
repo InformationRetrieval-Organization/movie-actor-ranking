@@ -1,10 +1,13 @@
 from typing import Dict, List, Union
+import logging
 
 from sqlalchemy import text
 from sqlmodel import select
 
 from db.models import Script
 from db.session import SessionLocal
+
+logger = logging.getLogger(__name__)
 
 
 async def get_all_scripts() -> List[Script]:
@@ -16,7 +19,7 @@ async def get_all_scripts() -> List[Script]:
             result = await session.exec(select(Script))
             return result.all()
     except Exception as e:
-        print(f"An error occurred while fetching scripts: {e}")
+        logger.exception("An error occurred while fetching scripts")
         return []
 
 
@@ -31,7 +34,7 @@ async def create_many_scripts(scripts: List[Dict[str, Union[str, int]]]) -> int:
             await session.commit()
             return len(script_objects)
     except Exception as e:
-        print(f"An error occurred while creating the scripts: {e}")
+        logger.exception("An error occurred while creating scripts")
 
 
 async def create_one_script(dialogue: str, movie_id: int, role_id: int) -> Script:
@@ -46,7 +49,7 @@ async def create_one_script(dialogue: str, movie_id: int, role_id: int) -> Scrip
             await session.refresh(script)
             return script
     except Exception as e:
-        print(f"An error occurred while creating the script: {e}")
+        logger.exception("An error occurred while creating script")
 
 
 async def update_scripts(scripts: List[Script]) -> None:
@@ -68,7 +71,7 @@ async def update_scripts(scripts: List[Script]) -> None:
         )
 
     if not list_of_ids:
-        print("No scripts to update.")
+        logger.info("No scripts to update.")
         return
 
     try:
@@ -93,14 +96,14 @@ async def update_scripts(scripts: List[Script]) -> None:
             await session.commit()
 
     except Exception as e:
-        print(f"An error occurred while updating the scripts: {e}")
+        logger.exception("An error occurred while updating scripts")
 
 
 async def delete_all_scripts() -> None:
     """
     Delete all scripts from the database and reset the auto-increment counter
     """
-    print("Deleting all scripts")
+    logger.info("Deleting all scripts")
     try:
         async with SessionLocal() as session:
             await session.execute(
@@ -108,4 +111,4 @@ async def delete_all_scripts() -> None:
             )
             await session.commit()
     except Exception as e:
-        print(f"An error occurred while deleting scripts: {e}")
+        logger.exception("An error occurred while deleting scripts")

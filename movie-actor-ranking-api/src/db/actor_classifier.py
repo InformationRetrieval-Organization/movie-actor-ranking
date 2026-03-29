@@ -1,10 +1,13 @@
 from typing import Dict, List, Union
+import logging
 
 from sqlalchemy import text
 from sqlmodel import select
 
 from db.models import ActorClassifier
 from db.session import SessionLocal
+
+logger = logging.getLogger(__name__)
 
 
 async def get_all_actor_classifiers() -> List[ActorClassifier]:
@@ -16,7 +19,7 @@ async def get_all_actor_classifiers() -> List[ActorClassifier]:
             result = await session.exec(select(ActorClassifier))
             return result.all()
     except Exception as e:
-        print(f"An error occurred while fetching actor classifiers: {e}")
+        logger.exception("An error occurred while fetching actor classifiers")
         return []
 
 
@@ -36,7 +39,7 @@ async def create_many_actor_classifiers(
             await session.commit()
             return len(actor_classifier_objects)
     except Exception as e:
-        print(f"An error occurred while creating the actor classifiers: {e}")
+        logger.exception("An error occurred while creating actor classifiers")
 
 
 async def create_one_actor_classifier(
@@ -67,14 +70,14 @@ async def create_one_actor_classifier(
             await session.refresh(actor_classifier)
             return actor_classifier
     except Exception as e:
-        print(f"An error occurred while creating the actor classifier: {e}")
+        logger.exception("An error occurred while creating actor classifier")
 
 
 async def delete_all_actor_classifiers() -> None:
     """
     Delete all actor classifiers from the database and reset the auto-increment counter
     """
-    print("Deleting all actor classifiers")
+    logger.info("Deleting all actor classifiers")
     try:
         async with SessionLocal() as session:
             await session.execute(
@@ -82,7 +85,7 @@ async def delete_all_actor_classifiers() -> None:
             )
             await session.commit()
     except Exception as e:
-        print(f"An error occurred while deleting actor classifiers: {e}")
+        logger.exception("An error occurred while deleting actor classifiers")
 
 
 async def search_actor_classifier(actor_id: int) -> List[ActorClassifier]:
@@ -95,7 +98,7 @@ async def search_actor_classifier(actor_id: int) -> List[ActorClassifier]:
             result = await session.exec(stmt)
             return result.all()
     except Exception as e:
-        print(f"An error occurred while searching for the actor classifier: {e}")
+        logger.exception("An error occurred while searching for actor classifier")
         return []
 
 
@@ -112,5 +115,5 @@ async def search_actor_classifiers(actor_ids: List[int]) -> Dict[int, int]:
                 for actor_classifier in actor_classifiers
             }
     except Exception as e:
-        print(f"An error occurred while searching for the actor classifiers: {e}")
+        logger.exception("An error occurred while searching for actor classifiers")
         return {}

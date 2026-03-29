@@ -1,4 +1,5 @@
 import requests
+import logging
 from bs4 import BeautifulSoup
 import os
 import sys
@@ -9,6 +10,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from config import RAW_IMSDB_MOV_FILE_PATH, RAW_IMSDB_MOV_SCR_FILE_PATH, IMSDB_URL
+
+logger = logging.getLogger(__name__)
 
 
 def get_html(url):
@@ -68,7 +71,7 @@ def get_imsdb_scripts(input_file_path: str, target_file_path: str) -> None:
                 result = future.result()
                 movie.update(result)
             except Exception as exc:
-                print(f"Error processing {movie['title']}: {exc}")
+                logger.exception("Error processing %s", movie["title"])
 
     # write data back to the CSV file
     with open(target_file_path, "w", newline="") as csvfile:
@@ -129,7 +132,7 @@ def fetch_script_link(movie):
             movie["script_link"] = script_link
             break
     if not found:
-        print("Script link not found for", title)
+        logger.warning("Script link not found for %s", title)
         movie["script_link"] = None
 
     return movie
@@ -151,7 +154,7 @@ def get_imsdb_script_links(file_path: str) -> None:
                 result = future.result()
                 movie.update(result)
             except Exception as exc:
-                print(f"Error processing {movie['title']}: {exc}")
+                logger.exception("Error processing %s", movie["title"])
 
     # Filter out movies without a script link
     data = [movie for movie in data if movie.get("script_link") is not None]
@@ -167,11 +170,12 @@ def get_imsdb_script_links(file_path: str) -> None:
 
 
 if __name__ == "__main__":
-    print("Scraping IMSDB...")
+    logging.basicConfig(level=logging.INFO)
+    logger.info("Scraping IMSDB...")
 
     get_imsdb_movies(RAW_IMSDB_MOV_FILE_PATH)
     get_imsdb_script_links(RAW_IMSDB_MOV_FILE_PATH)
 
     get_imsdb_scripts(RAW_IMSDB_MOV_FILE_PATH, RAW_IMSDB_MOV_SCR_FILE_PATH)
 
-    print("Done")
+    logger.info("Done")

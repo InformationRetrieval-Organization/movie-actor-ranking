@@ -1,4 +1,5 @@
 import re
+import logging
 from typing import Dict, List, Set, Tuple
 import nltk
 from nltk.corpus import stopwords
@@ -14,13 +15,14 @@ from db.models import Script
 
 vocabulary_file_path = VOCABULARY_FILE_PATH
 term_doc_freq_file_path = TERM_DOC_FREQ_FILE_PATH
+logger = logging.getLogger(__name__)
 
 
 async def preprocess_scripts():
     """
     Preprocesses the scripts in the database and returns a list of tokens.
     """
-    print("Start Preprocessing")
+    logger.info("Start preprocessing")
 
     download_nltk_resources()
 
@@ -32,7 +34,7 @@ async def preprocess_scripts():
 
     if len(scripts) != len(processed_scripts):
         # Preprocess the scripts
-        print("Not all scripts are preprocessed, start preprocessing:")
+        logger.info("Not all scripts are preprocessed, starting preprocessing")
         unprocessed_scripts = [
             script for script in scripts if script not in processed_scripts
         ]
@@ -42,14 +44,14 @@ async def preprocess_scripts():
         processed_scripts.extend(new_processed_scripts)
     else:
         # all scripts are already preprocessed
-        print("Scripts are already preprocessed")
+        logger.info("Scripts are already preprocessed")
         list_of_tokens = await load_vocabulary()
 
     globals._vocabulary = list_of_tokens
 
-    print(str(len(processed_scripts)) + " scripts came trough the preprocessing")
-    print("Length of Vocabulary: " + str(len(globals._vocabulary)))
-    print("Preprocessing completed")
+    logger.info("%s scripts came through preprocessing", len(processed_scripts))
+    logger.info("Length of vocabulary: %s", len(globals._vocabulary))
+    logger.info("Preprocessing completed")
 
 
 def download_nltk_resources():

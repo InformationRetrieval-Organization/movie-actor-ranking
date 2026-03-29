@@ -1,4 +1,5 @@
 import pandas as pd
+import logging
 import os
 import sys
 from fuzzywuzzy import fuzz
@@ -11,6 +12,8 @@ from config import (
     PRO_IMSDB_MOV_SCR_FILE_PATH,
     PRO_IMDB_IMSDB_MOV_SCR_FILE_PATH,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def process_dialogue_row(dialogue_row, imdb_movies):
@@ -98,7 +101,8 @@ def merge_movie_data(
 
 
 if __name__ == "__main__":
-    print("Merging IMDb and IMSDB data...")
+    logging.basicConfig(level=logging.INFO)
+    logger.info("Merging IMDb and IMSDB data...")
 
     merged_df = merge_movie_data(
         PRO_IMDB_MOV_ROL_FILE_PATH,
@@ -106,4 +110,4 @@ if __name__ == "__main__":
         PRO_IMDB_IMSDB_MOV_SCR_FILE_PATH,
     )
 
-    print("Merged data saved to:", PRO_IMDB_IMSDB_MOV_SCR_FILE_PATH)
+    logger.info("Merged data saved to: %s", PRO_IMDB_IMSDB_MOV_SCR_FILE_PATH)

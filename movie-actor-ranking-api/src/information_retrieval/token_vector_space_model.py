@@ -1,4 +1,5 @@
 import math
+import logging
 from typing import Any, List
 import numpy as np
 from db.actor import get_all_actors, get_all_actors_dialogues_processed
@@ -9,6 +10,8 @@ from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor
 import os
 from db.models import Actor
+
+logger = logging.getLogger(__name__)
 
 
 async def search_token_vector_space_model(query: str) -> List[int]:
@@ -86,7 +89,7 @@ async def build_token_vector_space_model():
     """
     Build the Vector Space Model
     """
-    print("Building Vector Space Model")
+    logger.info("Building vector space model")
 
     actors = await get_all_actors_dialogues_processed()
 
@@ -122,7 +125,7 @@ async def build_token_vector_space_model():
         globals._document_term_weight_matrix.append(tfidf_vector)
         globals._document_id_vector_map[actor_id] = tfidf_vector
 
-    print("Vector Space Model Built")
+    logger.info("Vector space model built")
 
 
 def compute_inverse_document_frequency(N: int, df: int) -> float:
@@ -149,7 +152,7 @@ def calculate_dimension_reduced_query(
     square_s_reduced = np.diag(globals._S_reduced)
     # Check if the matrix is invertible
     if np.linalg.det(square_s_reduced) == 0:
-        print("The matrix is singular and cannot be inverted.")
+        logger.error("The matrix is singular and cannot be inverted.")
     else:
         # Calculate the inverse
         s_k_inv = np.linalg.inv(square_s_reduced)
@@ -173,7 +176,7 @@ async def execute_singualar_value_decomposition():
     """
     Singular Value Decomposition
     """
-    print("Start Executing SVD")
+    logger.info("Start executing SVD")
     documents_vector_list = list(
         globals._document_id_vector_map.items()
     )  # get the list of documents and their vectors
@@ -217,4 +220,4 @@ async def execute_singualar_value_decomposition():
         )  # Get the ith row of the V_reduced matrix and convert it to a 1D array
         globals._document_svd_matrix[doc_id] = vector
         i += 1
-    print("SVD executed")
+    logger.info("SVD executed")

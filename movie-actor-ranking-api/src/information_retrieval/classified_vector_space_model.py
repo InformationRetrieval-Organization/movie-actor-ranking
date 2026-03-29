@@ -1,4 +1,5 @@
 import math
+import logging
 from typing import Any, List, Dict
 import numpy as np
 from db.actor import (
@@ -17,6 +18,7 @@ from db.actor_classifier import get_all_actor_classifiers
 from db.models import ActorClassifier
 
 fame_coefficient_map = {}
+logger = logging.getLogger(__name__)
 
 
 async def search_classified_vector_space_model(query: List[str]) -> List[int]:
@@ -77,7 +79,9 @@ async def build_classified_vector_space_model():
     if not classified_actors:
         fame_coefficient_map = {}
         globals._classified_actors_vector_map = {}
-        print("No classified actors found. Skipping classifier vector model build.")
+        logger.info(
+            "No classified actors found. Skipping classifier vector model build."
+        )
         return
 
     # Calculate the fame coefficient map
