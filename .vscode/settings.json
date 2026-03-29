@@ -1,32 +1,35 @@
 {
-    "cSpell.enabled": false,
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter",
-        "editor.formatOnSave": true,
-        "editor.tabSize": 4
-    },
-    "[json]": {
-        "editor.tabSize": 4
-    },
-    "python.pythonPath": ".venv/bin/python",
-    "terminal.integrated.env.linux": {
-        "PYTHONPATH": "${workspaceFolder}/.venv/bin/python"
-    },
-    "terminal.integrated.env.windows": {
-        "PYTHONPATH": "${workspaceFolder}/.venv/bin/python"
-    },
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "appService.zipIgnorePattern": [
-      "node_modules{,/**}",
-      ".vscode{,/**}"
-    ],
-    "appService.deploySubpath": ".",
-    "[json]": {
-      "editor.tabSize": 4,
-      "editor.formatOnSave": true
-    },
-    "[typescriptreact]": {
-      "editor.tabSize": 4,
-      "editor.formatOnSave": true
-    }
+  "cSpell.enabled": false,
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4
+  },
+  "[json]": {
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/movie-actor-ranking-api/.venv/bin/python",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/movie-actor-ranking-api/src"
+  ],
+  "terminal.integrated.env.linux": {
+    "PYTHONPATH": "${workspaceFolder}/movie-actor-ranking-api/src"
+  },
+  "terminal.integrated.env.osx": {
+    "PYTHONPATH": "${workspaceFolder}/movie-actor-ranking-api/src"
+  },
+  "terminal.integrated.env.windows": {
+    "PYTHONPATH": "${workspaceFolder}/movie-actor-ranking-api/src"
+  },
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "appService.zipIgnorePattern": [
+    "node_modules{,/**}",
+    ".vscode{,/**}"
+  ],
+  "appService.deploySubpath": ".",
+  "[typescriptreact]": {
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true
+  }
 }
