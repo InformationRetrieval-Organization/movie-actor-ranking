@@ -8,7 +8,7 @@ import globals
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor
 import os
-from prisma import models
+from db.models import Actor
 
 
 async def search_token_vector_space_model(query: str) -> List[int]:
@@ -63,7 +63,7 @@ async def search_token_vector_space_model(query: str) -> List[int]:
     return sorted_doc_ids
 
 
-def compute_tfidf_vector(vocabulary, actor: models.Actor, inverse_document_frequency):
+def compute_tfidf_vector(vocabulary, actor: Actor, inverse_document_frequency):
     # Get all processed dialogues for an actor
     all_processed_dialogues = " ".join(
         script.processedDialogue

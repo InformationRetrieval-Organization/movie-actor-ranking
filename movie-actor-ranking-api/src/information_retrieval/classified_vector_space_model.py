@@ -7,7 +7,6 @@ from db.actor import (
 import globals
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor
-from prisma import models
 from db.actor_classifier import get_all_actor_classifiers
 from db.actor import get_actors_by_most_roles
 from nltk.corpus import wordnet as wn
@@ -15,6 +14,7 @@ from db.actor_classifier import get_all_actor_classifiers
 from utils.classification import get_classification
 from config import FAME_COEFFICIENT_PERCENTAGE
 from db.actor_classifier import get_all_actor_classifiers
+from db.models import ActorClassifier
 
 fame_coefficient_map = {}
 
@@ -81,7 +81,7 @@ async def build_classified_vector_space_model():
 
 
 def calculate_actor_vector(
-    actor: models.ActorClassifier, fame_coefficient: float
+    actor: ActorClassifier, fame_coefficient: float
 ) -> List[float]:
     """
     Read the values for the classification and calculate the vector for the actor

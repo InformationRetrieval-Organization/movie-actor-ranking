@@ -24,14 +24,13 @@ uv sync
 ## Database 
 ```bash
 docker compose -f compose.yml up -d
-uv run python -m prisma db push
-uv run python -m prisma generate
+uv run python src/db/helpers/reset_database.py
 sh scripts/import_data.sh
 ```
 
 ### Run application
 ```bash
-uv run gunicorn main:app -c gunicorn.conf.py
+uv run uvicorn main:app --app-dir src --host 0.0.0.0 --port 3100
 ```
 
 ### optional: pgadmin

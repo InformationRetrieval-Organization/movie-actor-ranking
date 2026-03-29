@@ -10,13 +10,15 @@ import uvicorn
 from globals import init_globals
 from data_preprocessing.script_preprocessing import preprocess_scripts
 from information_retrieval.token_vector_space_model import (
-    build_token_vector_space_model, execute_singualar_value_decomposition
+    build_token_vector_space_model,
+    execute_singualar_value_decomposition,
 )
 from information_retrieval.classified_vector_space_model import (
     build_classified_vector_space_model,
 )
 from utils.classification import load_classification_model
 from data_preprocessing.actor_classfication import classify_actors
+from db.session import init_db_schema
 
 limiter = Limiter(key_func=get_remote_address, default_limits=["30/minute"])
 
@@ -25,6 +27,8 @@ limiter = Limiter(key_func=get_remote_address, default_limits=["30/minute"])
 async def lifespan(app: FastAPI):
     print("FastAPI app started.")
 
+    await init_db_schema()
+
     init_globals()
     load_classification_model()
 
@@ -32,8 +36,8 @@ async def lifespan(app: FastAPI):
     await classify_actors()
 
     await build_classified_vector_space_model()
-    #await build_token_vector_space_model()
-    #await execute_singualar_value_decomposition()
+    # await build_token_vector_space_model()
+    # await execute_singualar_value_decomposition()
     yield
 
 

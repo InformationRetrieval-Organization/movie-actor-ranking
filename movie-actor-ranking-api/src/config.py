@@ -7,6 +7,7 @@ load_dotenv()
 
 # Flask Environment
 FASTAPI_ENV = os.getenv("FASTAPI_ENV")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # General paths
 CWD = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

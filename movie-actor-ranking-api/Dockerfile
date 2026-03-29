@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 
-# Install system dependencies required for Prisma/Node.js
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libatomic1 \
     && rm -rf /var/lib/apt/lists/*
@@ -35,4 +35,4 @@ ENV PATH="/code/.venv/bin:$PATH"
 
 EXPOSE 3100
 
-CMD ["/bin/bash", "-c", "prisma generate; gunicorn main:app -c gunicorn.conf.py"]
+CMD ["uv", "run", "uvicorn", "main:app", "--app-dir", "src", "--host", "0.0.0.0", "--port", "3100"]

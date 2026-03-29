@@ -1,5 +1,4 @@
 from typing import List, Dict, Union
-from prisma import models
 from db.actor_classifier import create_many_actor_classifiers, get_all_actor_classifiers
 from db.actor import get_all_actors_dialogues
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -7,6 +6,7 @@ from tqdm import tqdm
 from utils.classification import get_classification
 import os
 import asyncio
+from db.models import Actor
 
 
 def split_text_into_chunks(
@@ -46,7 +46,7 @@ def split_text_into_chunks(
 
 
 def classify_actor_dialogues(
-    actors: List[models.Actor],
+    actors: List[Actor],
 ) -> Dict[int, Dict[str, List[float]]]:
     """
     Classify the dialogues of actors and return the classification results.

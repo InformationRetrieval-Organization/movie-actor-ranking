@@ -8,8 +8,8 @@ import pandas as pd
 from datetime import datetime, timedelta, timezone
 import os
 import sys
-from prisma import models
 import numpy as np
+from db.models import Actor
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
@@ -62,7 +62,7 @@ def evaluate_search_model(relevant_docs: List[int], retrieved_docs: List[int]) -
     return recall, precision, f1
 
 
-def call_vector_space_api(query: str) -> List[models.Actor]:
+def call_vector_space_api(query: str) -> List[Actor]:
     """
     Call Vector Space API
     """
@@ -72,7 +72,7 @@ def call_vector_space_api(query: str) -> List[models.Actor]:
     response.raise_for_status()
 
     actors_json = response.json()
-    actors = [models.Actor(**actor) for actor in actors_json]
+    actors = [Actor(**actor) for actor in actors_json]
 
     return actors
 

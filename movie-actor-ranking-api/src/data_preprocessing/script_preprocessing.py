@@ -3,7 +3,6 @@ from typing import Dict, List, Set, Tuple
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-from prisma import models
 from db.script import (
     get_all_scripts,
     update_scripts,
@@ -11,6 +10,7 @@ from db.script import (
 import globals
 import csv
 from config import VOCABULARY_FILE_PATH, TERM_DOC_FREQ_FILE_PATH
+from db.models import Script
 
 vocabulary_file_path = VOCABULARY_FILE_PATH
 term_doc_freq_file_path = TERM_DOC_FREQ_FILE_PATH
@@ -76,8 +76,8 @@ def handle_tokens(term_freq_map: Dict[str, int], tokens: List[str]) -> List[str]
 
 
 async def preprocess_and_update_scripts(
-    scripts: List[models.Script],
-) -> Tuple[List[models.Script], List[str]]:
+    scripts: List[Script],
+) -> Tuple[List[Script], List[str]]:
     """
     Preprocesses the posts and inserts them into the database.
     """
@@ -148,8 +148,8 @@ async def load_vocabulary() -> List[str]:
 
 
 def preprocess_script(
-    script: models.Script, english_words: Set[str]
-) -> Tuple[models.Script, List[str]]:
+    script: Script, english_words: Set[str]
+) -> Tuple[Script, List[str]]:
     """
     Preprocess a script.
     """
