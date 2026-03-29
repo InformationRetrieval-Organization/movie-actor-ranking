@@ -34,16 +34,20 @@ async def search_classified_vector_space_model(query: List[str]) -> List[int]:
     # create the query vector
     query_vector = compute_query_vector(query_classification_map)
 
+    if not globals._classified_actors_vector_map:
+        return []
+
     # Calculate cosine similarity between the query vector and actor vectors
     actor_cosine_similarity_map = {}
     for actor_id, vector in globals._classified_actors_vector_map.items():
         dot_product = np.dot(query_vector, vector)
         magnitude_query = np.linalg.norm(query_vector)
         magnitude_entry = np.linalg.norm(vector)
-        cosine_similarity = dot_product / (magnitude_query * magnitude_entry)
+        denominator = magnitude_query * magnitude_entry
+        cosine_similarity = 0 if denominator == 0 else dot_product / denominator
         actor_value = (
             cosine_similarity * (1 - FAME_COEFFICIENT_PERCENTAGE)
-            + fame_coefficient_map[actor_id] * FAME_COEFFICIENT_PERCENTAGE
+            + fame_coefficient_map.get(actor_id, 1.0) * FAME_COEFFICIENT_PERCENTAGE
         )
         actor_cosine_similarity_map[actor_id] = actor_value
     # sort cosine similarity descending
@@ -65,12 +69,18 @@ async def build_classified_vector_space_model():
     """
     Calculate the vectors for every actor based on their classification
     """
+    global fame_coefficient_map
 
     # Get all classified actors
     classified_actors = await get_all_actor_classifiers()
 
+    if not classified_actors:
+        fame_coefficient_map = {}
+        globals._classified_actors_vector_map = {}
+        print("No classified actors found. Skipping classifier vector model build.")
+        return
+
     # Calculate the fame coefficient map
-    global fame_coefficient_map
     fame_coefficient_map = await calculate_fame_coefficient_map()
 
     # Caculate vectors for each actor
@@ -159,6 +169,9 @@ def compute_query_vector(query_clasifications: List[Dict]) -> List[float]:
         for label, score_list in entry.items():
             label_sum[label] += sum(score_list)
 
+    if not query_clasifications:
+        return [0, 0, 0, 0, 0, 0]
+
     # Calculate the average for each label
     num_entries = len(query_clasifications)
     label_avg = {label: label_sum[label] / num_entries for label in label_sum}
@@ -179,16 +192,24 @@ async def calculate_fame_coefficient_map() -> Dict[int, float]:
         actor.id for actor in actors_list if actor.id in classified_actor_ids
     ]  # only store actor ids that have been classified
 
+    if not actor_ids:
+        return {}
+
     # should be not that high, because sin similarity is max 1
     max_fame_coefficient = 3
     min_fame_coefficient = 1
 
-    step_value = (max_fame_coefficient - min_fame_coefficient) / len(actor_ids)
+    if len(actor_ids) == 1:
+        return {actor_ids[0]: max_fame_coefficient}
+
+    step_value = (max_fame_coefficient - min_fame_coefficient) / (len(actor_ids) - 1)
 
     # Calculate the coefficient for each actor
     fame_coefficient_map = {}
-    for actor_id in tqdm(actor_ids, desc="Calculating fame coefficient"):
-        fame_coefficient = max_fame_coefficient - step_value * actor_ids.index(actor_id)
+    for index, actor_id in enumerate(
+        tqdm(actor_ids, desc="Calculating fame coefficient")
+    ):
+        fame_coefficient = max_fame_coefficient - step_value * index
         fame_coefficient_map[actor_id] = fame_coefficient
 
     return fame_coefficient_map
