@@ -27,6 +27,7 @@ dependencies = [
     "transformers>=5.4.0",
     "uvicorn>=0.42.0",
     "greenlet>=3.3.2",
+    "requests>=2.33.0",
 ]
 
 [build-system]
