@@ -51,52 +51,58 @@ export default function ResultsList({ results }: { results: ActorModel[] }) {
 
   return (
     <div>
-      {resultsForPage.map((result, index) => (
-        <Card key={index} className="mt-3">
-          <div className="p-4">
-            <div className="flex gap-6 items-center justify-center">
-              <div className="">
-                <img
-                  alt={
-                    result.headshotUrl
-                      ? `${result.name}'s profile`
-                      : "No profile picture available"
-                  }
-                  height={100}
-                  width={100}
-                  className="object-cover"
-                  loading="lazy"
-                  src={
-                    result.headshotUrl
-                      ? result.headshotUrl
-                      : "https://corporate.bestbuy.com/wp-content/uploads/2022/06/Image-Portrait-Placeholder.jpg"
-                  }
-                />
-              </div>
-              <div className="flex flex-col grow">
-                <div className="flex flex-col col-span-6">
-                  <Link
-                    className="mb-3 text-4xl"
-                    href={formatImdbActorUrl(result.imdbId)}
-                    target="_blank"
-                  >
-                    {result.name}
-                  </Link>
-                  {result.roles.slice(0, 3).map((role, i) => (
-                    <div key={i} className="flex flex-col gap-2">
-                      <p className="text-sm">
-                        <em>{role.name}</em> in{" "}
-                        <strong>{role.movie.title}</strong>
-                      </p>
-                    </div>
-                  ))}
-                  {result.roles.length > 3 && <p className="text-sm">...</p>}
+      {resultsForPage.map((result, index) => {
+        const roles = Array.isArray(result.roles) ? result.roles : [];
+
+        return (
+          <Card key={index} className="mt-3">
+            <div className="p-4">
+              <div className="flex gap-6 items-center justify-center">
+                <div className="">
+                  <img
+                    alt={
+                      result.headshotUrl
+                        ? `${result.name}'s profile`
+                        : "No profile picture available"
+                    }
+                    height={100}
+                    width={100}
+                    className="object-cover"
+                    loading="lazy"
+                    src={
+                      result.headshotUrl
+                        ? result.headshotUrl
+                        : "https://corporate.bestbuy.com/wp-content/uploads/2022/06/Image-Portrait-Placeholder.jpg"
+                    }
+                  />
+                </div>
+                <div className="flex flex-col grow">
+                  <div className="flex flex-col col-span-6">
+                    <Link
+                      className="mb-3 text-4xl"
+                      href={formatImdbActorUrl(result.imdbId)}
+                      target="_blank"
+                    >
+                      {result.name}
+                    </Link>
+                    {roles.slice(0, 3).map((role, i) => (
+                      <div key={i} className="flex flex-col gap-2">
+                        <p className="text-sm">
+                          <em>{role.name ?? "Unknown role"}</em> in{" "}
+                          <strong>
+                            {role.movie?.title ?? "Unknown movie"}
+                          </strong>
+                        </p>
+                      </div>
+                    ))}
+                    {roles.length > 3 && <p className="text-sm">...</p>}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </Card>
-      ))}
+          </Card>
+        );
+      })}
       {results.length > resultsPerPage && (
         <div className="mt-4 flex items-center justify-center gap-3">
           <Button
