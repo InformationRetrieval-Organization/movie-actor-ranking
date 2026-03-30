@@ -2,32 +2,40 @@ from collections.abc import AsyncIterator
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from config import DATABASE_URL
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 
-def _build_async_database_url() -> tuple[str, dict[str, dict[str, str]]]:
+def _build_async_database_url() -> tuple[str, dict[str, object]]:
     database_url = DATABASE_URL
     if not database_url:
         raise RuntimeError("DATABASE_URL is not set.")
 
     if database_url.startswith("postgresql://"):
         database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
     elif database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql+asyncpg://", 1)
 
     parsed = urlparse(database_url)
     query_params = parse_qs(parsed.query, keep_blank_values=True)
     schema_values = query_params.pop("schema", None)
+    sslmode_values = query_params.pop("sslmode", None)
 
-    connect_args: dict[str, dict[str, str]] = {}
+    connect_args: dict[str, object] = {}
     if schema_values and schema_values[0]:
-        connect_args = {
-            "server_settings": {
-                "search_path": schema_values[0],
-            }
-        }
+        # asyncpg does not accept "schema" as a connect kwarg; use search_path.
+        connect_args["server_settings"] = {"search_path": schema_values[0]}
+
+    if sslmode_values and sslmode_values[0]:
+        # asyncpg uses "ssl" instead of libpq's "sslmode".
+        sslmode = sslmode_values[0].lower()
+        if sslmode == "disable":
+            connect_args["ssl"] = False
+        else:
+            connect_args["ssl"] = sslmode
 
     normalized_query = urlencode(query_params, doseq=True)
     normalized_url = urlunparse(parsed._replace(query=normalized_query))
